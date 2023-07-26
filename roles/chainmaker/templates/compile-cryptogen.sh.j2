@@ -1,0 +1,9 @@
+#!/bin/bash
+export GO111MODULE=on
+export GOPROXY=https://mirrors.aliyun.com/goproxy/
+export GONOPROXY=chainmaker.org
+export GOPRIVATE=chainmaker.org
+export PATH={{ gopath }}/bin:$PATH
+cd src
+{{ go_compile_version }} mod tidy
+{{ go_compile_version }} build -o {{ compile_workspace }}/{{ repo.chainmaker_cert.name }}.bin

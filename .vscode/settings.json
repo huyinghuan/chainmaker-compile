@@ -1,0 +1,15 @@
+{
+    "yaml.schemas": {
+        "https://raw.fastgit.org/ansible/schemas/main/f/ansible-vars.json": [
+            "vars/*.yml",
+            "defaults/*.yml"
+        ],
+        "https://raw.fastgit.org/ansible/schemas/main/f/ansible.json#/$defs/tasks": "tasks/*.yml"
+    },
+    "files.associations": {
+        "*.tpl.j2": "jinja-yaml",
+        "*.sh.j2": "jinja-shell",
+        "*.service.j2": "jinja-systemd",
+        "*.yml.j2": "jinja-yaml",
+    }
+}

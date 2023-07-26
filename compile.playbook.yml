@@ -1,0 +1,6 @@
+- name: Chainmaker编译
+  hosts: compiler_server
+  roles:
+    # - { role: checker }
+    - { role: git_repo }
+    - { role: chainmaker }

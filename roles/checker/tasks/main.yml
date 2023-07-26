@@ -1,0 +1,39 @@
+- name: Set timezone to Asia/Shanghai
+  template:
+    src: /usr/share/zoneinfo/Asia/Shanghai
+    dest: /etc/localtime
+    owner: root
+    group: root
+    mode: "0644"
+- name: 安装chrony时间同步
+  ansible.builtin.dnf:
+    name: chrony
+    state: present
+  become: true
+- name: 启动 chrony
+  ansible.builtin.systemd:
+    name: chronyd
+    state: started
+  become: true
+- name: 时间同步
+  ansible.builtin.command: "chronyc makestep"
+  changed_when: false
+- name: 当前时间
+  ansible.builtin.command: "date"
+  changed_when: false
+  register: sysdate
+- name: 当前时间
+  ansible.builtin.debug:
+    msg: "{{ sysdate.stdout }}"
+- name: Disable SELinux
+  ansible.posix.selinux:
+    state: disabled
+  failed_when: false
+  when: ansible_selinux.status != "disabled"
+  become: true
+# 禁止firewall-cmd
+- name: Disable firewall
+  ansible.builtin.service:
+    name: firewalld
+    state: stopped
+  become: true

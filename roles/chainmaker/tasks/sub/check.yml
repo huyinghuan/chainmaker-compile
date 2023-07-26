@@ -1,0 +1,33 @@
+- name: 检查gcc
+  ansible.builtin.command: "gcc --version"
+  register: gcc_version
+  ignore_errors: true
+  changed_when: false
+- name: ShowLogs
+  ansible.builtin.debug:
+    msg: "{{ gcc_version.stdout_lines[0] }}"
+  when: gcc_version.rc == 0
+- name: 检查glibc
+  ansible.builtin.command: "ldd --version"
+  register: glibc_version
+  ignore_errors: true
+  changed_when: false
+- name: ShowLogs
+  ansible.builtin.debug:
+    msg: "{{ glibc_version.stdout_lines[0] }}"
+  when: glibc_version.rc == 0
+- name: 检查git
+  ansible.builtin.command: "git --version"
+  register: git_version
+  ignore_errors: true
+  changed_when: false
+- name: 安装gcc和glibc
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - gcc
+    - glibc
+    - git
+  when: gcc_version.rc != 0 or glibc_version.rc != 0 or git_version.rc != 0
+  become: true

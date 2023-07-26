@@ -1,0 +1,9 @@
+- name: 软件版本检查
+  ansible.builtin.import_tasks: sub/check.yml
+  tags: [prepare, prepare_check]
+- name: Go版本检查
+  ansible.builtin.import_tasks: sub/check_go.yml
+  tags: [prepare, prepare_check]
+- name: 编译链运行时二进制
+  ansible.builtin.import_tasks: sub/compile.yml
+  tags: [prepare, prepare_compile]

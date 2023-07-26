@@ -1,0 +1,36 @@
+- name: 创建编译工作目录
+  ansible.builtin.file:
+    path: "{{ compile_workspace }}"
+    state: directory
+    mode: 0777
+- name: 是否已经编译完成了
+  ansible.builtin.stat:
+    path: "{{ compile_workspace }}/{{ bin }}{{ version }}"
+  register: bin_file_stat
+- name: Chainmaker项目clone
+  ansible.builtin.git:
+    repo: "https://{{ repo_username | urlencode }}:{{ repo_password | urlencode }}@{{ repo.chainmaker.git }}"
+    dest: "{{ compile_workspace }}/{{ repo.chainmaker.name }}{{ version }}"
+    version: "{{ version }}"
+    force: true
+    depth: 1
+    single_branch: true
+  tags: clone
+  when: not bin_file_stat.stat.exists or force
+- name: 编译脚本拷贝
+  vars:
+    bin_name: "{{ bin }}{{ version }}"
+  ansible.builtin.template:
+    src: compile.{{ version }}.sh.j2
+    dest: "{{ compile_workspace }}/{{ repo.chainmaker.name }}{{ version }}/compile.ansible.sh"
+    mode: 0755
+  tags: [clone]
+  when: not bin_file_stat.stat.exists or force
+- name: 编译
+  ansible.builtin.command: ./compile.ansible.sh
+  args:
+    chdir: "{{ compile_workspace }}/{{ repo.chainmaker.name }}{{ version }}"
+  register: result
+  changed_when: true
+  tags: compile_bin
+  when: not bin_file_stat.stat.exists or force
